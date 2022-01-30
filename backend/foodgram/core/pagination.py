@@ -1,5 +1,5 @@
 from rest_framework.pagination import LimitOffsetPagination
 
 
-class CustomPagination(LimitOffsetPagination):
+class UserPagination(LimitOffsetPagination):
     offset_query_param = 'page'
