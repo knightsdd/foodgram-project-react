@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, views, status
 from .models import Ingredient, Recipe
 from .serializers import (IngredientSerializer, SimpleRecipeSerializer,
-                          FavoriteSerializer)
+                          FavoriteSerializer, FullRecipeSerializer)
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import FilterSet, CharFilter
 from django.shortcuts import get_object_or_404
@@ -57,3 +57,9 @@ class FavoriteView(views.APIView):
                 detail={'errors': 'Recipe NOT in favorite'})
         self.request.user.fav_recipes.filter(recipe_id=recipe_id).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FullRecipeViewSet(viewsets.ModelViewSet):
+
+    queryset = Recipe.objects.all()
+    serializer_class = FullRecipeSerializer
