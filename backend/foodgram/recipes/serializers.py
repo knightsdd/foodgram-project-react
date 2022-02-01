@@ -2,6 +2,9 @@ from rest_framework import serializers
 from .models import Favorite, Ingredient, Recipe, IngredientForRecipe
 from tags.serializers import TagSerializer
 from users.users_serializers import ShowUserSerializer
+from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import Base64ImageField
+from tags.models import Tag
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -11,27 +14,11 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SimpleRecipeSerializer(serializers.RelatedField):
+class SimpleRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time',)
-
-    def get_queryset(self):
-        limit = self.context['request'].GET.get('recipes_limit', 0)
-        user = self.context['request'].user
-        if limit > 0:
-            return Recipe.objects.filter(author=user)[:limit]
-        return Recipe.objects.filter(author=user)
-
-    def to_representation(self, value):
-        data = {
-            'id': value.id,
-            'name': value.name,
-            'image': str(value.image),
-            'cooking_time': value.cooking_time
-        }
-        return data
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -42,19 +29,6 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = '__all__'
-
-
-class IngredientForRecipeSerializer(serializers.ModelSerializer):
-
-    # amount = serializers.SerializerMethodField()
-
-    class Meta:
-        model = IngredientForRecipe
-        fields = ('id',)
-
-    def get_amount(self, obj):
-        print('AAA', obj)
-        return 0
 
 
 class FullRecipeSerializer(serializers.ModelSerializer):
@@ -91,3 +65,72 @@ class FullRecipeSerializer(serializers.ModelSerializer):
                 }
             )
         return data
+
+
+class IngredientForRecipeSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    amount = serializers.IntegerField()
+
+
+class AddRecipeSerialier(serializers.ModelSerializer):
+
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True,
+        required=True,)
+    ingredients = IngredientForRecipeSerializer(many=True, required=True)
+    image = Base64ImageField()
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+        default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'ingredients',
+            'tags',
+            'image',
+            'name',
+            'text',
+            'cooking_time',
+            'pub_date',
+            'author')
+        read_only_fields = ('pub_date', 'author')
+
+    def create(self, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
+        recipe = Recipe.objects.create(**validated_data)
+        for tag in tags:
+            recipe.tags.add(tag)
+        for i in ingredients:
+            ingredient = get_object_or_404(Ingredient, pk=i.get('id'))
+            IngredientForRecipe.objects.create(
+                ingredient=ingredient,
+                recipe=recipe,
+                amount=i.get('amount'))
+        return recipe
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name')
+        instance.text = validated_data.get('text')
+        instance.image = validated_data.get('image')
+        instance.cooking_time = validated_data.get('cooking_time')
+        instance.tags.clear()
+        for tag in validated_data.get('tags'):
+            instance.tags.add(tag)
+        instance.ings_for_recipe.all().delete()
+        for i in validated_data.get('ingredients'):
+            ingredient = get_object_or_404(Ingredient, pk=i.get('id'))
+            IngredientForRecipe.objects.create(
+                ingredient=ingredient,
+                recipe=instance,
+                amount=i.get('amount')
+            )
+        instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        s = FullRecipeSerializer(context=self.context)
+        return s.to_representation(instance=instance)

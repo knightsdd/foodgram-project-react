@@ -5,13 +5,15 @@ from drf_spectacular.views import (
 )
 from tags.urls import tag_router
 from recipes.urls import recipes_router
-from recipes.views import FavoriteView
+from recipes.views import FavoriteView, RecipeListAPIView, RecipeDetailAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(tag_router.urls)),
     path('api/', include(recipes_router.urls)),
     path('api/', include('users.urls')),
+    path('api/recipes/', RecipeListAPIView.as_view()),
+    path('api/recipes/<int:recipe_id>/', RecipeDetailAPIView.as_view()),
     path(
         'api/recipes/<int:recipe_id>/favorite',
         FavoriteView.as_view()),
