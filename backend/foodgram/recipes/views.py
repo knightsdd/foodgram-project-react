@@ -1,5 +1,6 @@
-from rest_framework import viewsets, permissions, views, status
+from rest_framework import viewsets, permissions, views, status, mixins
 from .models import Ingredient, Recipe
+from users.models import User
 from .serializers import (IngredientSerializer, SimpleRecipeSerializer,
                           FavoriteSerializer, FullRecipeSerializer,
                           AddRecipeSerialier)
@@ -8,6 +9,7 @@ from django_filters import FilterSet, CharFilter
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
+from core.pagination import UserPagination
 
 
 class IngredientFilterSet(FilterSet):
@@ -58,10 +60,28 @@ class FavoriteView(views.APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RecipeListAPIView(views.APIView):
+class RecipeListAPIView(views.APIView, mixins.ListModelMixin):
 
-    def get(self, request):
+    # TODO: tags filter
+
+    def get(self, request, *args, **kwargs):
         recipes = Recipe.objects.all()
+        if int(request.GET.get('is_favorited')):
+            print(request.GET.get('is_favorited'))
+            recipes = recipes.filter(fan__user=request.user)
+        if int(request.GET.get('is_in_shopping_cart')):
+            recipes = recipes.filter(customers__user=request.user)
+        if int(request.GET.get('author')):
+            author = get_object_or_404(User, pk=request.GET.get('author'))
+            recipes = recipes.filter(author=author)
+        paginator = UserPagination()
+        page = paginator.paginate_queryset(recipes, request)
+        if page is not None:
+            serializer = FullRecipeSerializer(
+                page,
+                context={'request': request},
+                many=True)
+            return paginator.get_paginated_response(serializer.data)
         serializer = FullRecipeSerializer(
             recipes,
             context={'request': request},
@@ -85,6 +105,7 @@ class RecipeDetailAPIView(views.APIView):
         serializer = FullRecipeSerializer(
             recipe,
             context={'request': request})
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, recipe_id):

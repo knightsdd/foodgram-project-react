@@ -50,7 +50,8 @@ class FullRecipeSerializer(serializers.ModelSerializer):
         return obj.fan.filter(user=user).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        return False
+        user = self.context['request'].user
+        return obj.customers.filter(user=user).exists()
 
     def get_ingredients(self, obj):
         ings = obj.ings_for_recipe.all()

@@ -37,11 +37,6 @@ class CreateUserSerializer(UserCreateSerializer):
             'password': {'required': True, 'write_only': True},
             }
 
-    # def validate_username(self, value):
-      #  if not re.match(r'[\w.@+-]+\z', value):
-       #     raise serializers.ValidationError("Invalid username")
-        # return value
-
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(

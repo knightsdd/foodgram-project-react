@@ -1,4 +1,3 @@
-from multiprocessing import context
 from rest_framework.exceptions import ValidationError
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
@@ -11,18 +10,9 @@ from django.shortcuts import get_object_or_404
 
 class CustomUserViewSet(UserViewSet):
 
-    # TODO: add recipes_limit to pagination
-
-    """def get_queryset(self):
-        user = self.request.user
-        queryset = User.objects.all().annotate(
-            is_subscribed=Exists(User.objects.filter(follower__user=user)))
-
-        return queryset"""
-
     @action(methods=['get'], detail=False)
     def subscriptions(self, request, *args, **kwargs):
-        subs = User.objects.filter(follower__user=request.user)
+        subs = User.objects.filter(follower__user=request.user).order_by('-pk')
         page = self.paginate_queryset(subs)
         if page is not None:
             serializer = SubscriptionsSerializer(
@@ -34,7 +24,7 @@ class CustomUserViewSet(UserViewSet):
             subs,
             many=True,
             context={'request': request})
-        serializer.context = {'request': request}
+        # serializer.context = {'request': request}
         return Response(serializer.data)
 
     @action(methods=['post', 'delete'], detail=True)
