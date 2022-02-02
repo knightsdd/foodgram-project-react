@@ -17,7 +17,7 @@ class Ingredient(models.Model):
         verbose_name='Единицы измерения')
 
     def __str__(self) -> str:
-        return f'{self.name}, {self.measurement_unit}'
+        return f'{self.name}, ({self.measurement_unit})'
 
     class Meta:
         ordering = ['name']
@@ -74,6 +74,7 @@ class IngredientForRecipe(models.Model):
 
     ingredient = models.ForeignKey(
         Ingredient,
+        related_name='amounts',
         on_delete=models.CASCADE,
         verbose_name='Ингредиент')
 

@@ -6,7 +6,7 @@ from drf_spectacular.views import (
 from tags.urls import tag_router
 from recipes.urls import recipes_router
 from recipes.views import RecipeListAPIView, RecipeDetailAPIView, FavoriteView
-from shop.views import ShoppingCartAPIView
+from shop.views import ShoppingCartAPIView, ListForShoppingAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,6 +18,9 @@ urlpatterns = [
     path(
         'api/recipes/<int:recipe_id>/shopping_cart/',
         ShoppingCartAPIView.as_view()),
+    path(
+        'api/recipes/download_shopping_cart/',
+        ListForShoppingAPIView.as_view()),
     path(
         'api/recipes/<int:recipe_id>/favorite/',
         FavoriteView.as_view()),
