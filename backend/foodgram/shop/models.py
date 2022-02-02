@@ -15,6 +15,16 @@ class ShoppingCart(models.Model):
         on_delete=models.CASCADE,
         related_name='shopping_cart')
 
-    recipes = models.ManyToManyField(
+    recipes = models.ForeignKey(
         Recipe,
-        verbose_name='Рецепты в корзине')
+        verbose_name='Рецепт в корзине',
+        related_name='customers',
+        on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipes'],
+                name='unique_user_recipe_from_shop'
+            )
+        ]

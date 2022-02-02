@@ -3,18 +3,11 @@ from .models import ShoppingCart
 
 
 class ShoppingCartAdmin(admin.ModelAdmin):
-    fields = (
+    list_display = (
         'user',
         'recipes'
     )
-    list_display = (
-        'user',
-        'get_recipes',
-    )
-
-    def get_recipes(self, obj):
-        return ', '.join([r.name for r in obj.recipes.all()])
-    get_recipes.short_description = 'Рецепты'
+    search_fields = ('user',)
 
 
 admin.site.register(ShoppingCart, ShoppingCartAdmin)
