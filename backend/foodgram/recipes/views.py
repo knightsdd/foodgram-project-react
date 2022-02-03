@@ -1,3 +1,4 @@
+from typing import Dict
 from rest_framework import viewsets, permissions, views, status, mixins
 from .models import Ingredient, Recipe
 from users.models import User
@@ -62,16 +63,16 @@ class FavoriteView(views.APIView):
 
 class RecipeListAPIView(views.APIView, mixins.ListModelMixin):
 
-    # TODO: tags filter
-
     def get(self, request, *args, **kwargs):
         recipes = Recipe.objects.all()
-        if int(request.GET.get('is_favorited')):
-            print(request.GET.get('is_favorited'))
+        tags = dict(request.GET).get('tags')
+        if tags:
+            recipes = recipes.filter(tags__slug__in=tags).distinct()
+        if int(request.GET.get('is_favorited', 0)):
             recipes = recipes.filter(fan__user=request.user)
-        if int(request.GET.get('is_in_shopping_cart')):
+        if int(request.GET.get('is_in_shopping_cart', 0)):
             recipes = recipes.filter(customers__user=request.user)
-        if int(request.GET.get('author')):
+        if int(request.GET.get('author', 0)):
             author = get_object_or_404(User, pk=request.GET.get('author'))
             recipes = recipes.filter(author=author)
         paginator = UserPagination()
