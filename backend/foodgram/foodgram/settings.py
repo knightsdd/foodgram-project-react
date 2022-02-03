@@ -102,9 +102,9 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user_create': 'users.serializers.CreateUserSerializer',
-        'user': 'users.serializers.ShowUserSerializer',
-        'current_user': 'users.serializers.ShowUserSerializer',
+        'user_create': 'users.users_serializers.CreateUserSerializer',
+        'user': 'users.users_serializers.ShowUserSerializer',
+        'current_user': 'users.users_serializers.ShowUserSerializer',
     },
     'PERMISSIONS': {
         'user_create': ['rest_framework.permissions.AllowAny', ],

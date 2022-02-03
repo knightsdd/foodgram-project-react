@@ -1,16 +1,16 @@
-from typing import Dict
-from rest_framework import viewsets, permissions, views, status, mixins
-from .models import Ingredient, Recipe
-from users.models import User
-from .serializers import (IngredientSerializer, SimpleRecipeSerializer,
-                          FavoriteSerializer, FullRecipeSerializer,
-                          AddRecipeSerialier)
-from django_filters.rest_framework import DjangoFilterBackend
-from django_filters import FilterSet, CharFilter
-from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import ValidationError, PermissionDenied
-from rest_framework.response import Response
 from core.pagination import UserPagination
+from django.shortcuts import get_object_or_404
+from django_filters import CharFilter, FilterSet
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import permissions, status, views, viewsets
+from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.response import Response
+from users.models import User
+
+from .models import Ingredient, Recipe
+from .serializers import (AddRecipeSerialier, FavoriteSerializer,
+                          FullRecipeSerializer, IngredientSerializer,
+                          SimpleRecipeSerializer)
 
 
 class IngredientFilterSet(FilterSet):
@@ -61,7 +61,9 @@ class FavoriteView(views.APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RecipeListAPIView(views.APIView, mixins.ListModelMixin):
+class RecipeListAPIView(views.APIView):
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         recipes = Recipe.objects.all()
@@ -100,6 +102,8 @@ class RecipeListAPIView(views.APIView, mixins.ListModelMixin):
 
 
 class RecipeDetailAPIView(views.APIView):
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, recipe_id):
         recipe = get_object_or_404(Recipe, pk=recipe_id)

@@ -1,18 +1,21 @@
 import io
 import os
-from rest_framework import views, status
-from rest_framework.response import Response
-from .models import ShoppingCart
-from recipes.models import Recipe, Ingredient
-from recipes.serializers import SimpleRecipeSerializer
-from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import ValidationError
+
 from django.db.models import Sum
 from django.http import FileResponse
-from reportlab.pdfgen import canvas
+from django.shortcuts import get_object_or_404
+from recipes.models import Ingredient, Recipe
+from recipes.serializers import SimpleRecipeSerializer
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
+from rest_framework import status, views
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+
 from foodgram.settings import BASE_DIR
+
+from .models import ShoppingCart
 
 
 class ShoppingCartAPIView(views.APIView):

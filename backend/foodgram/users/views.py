@@ -1,11 +1,12 @@
-from rest_framework.exceptions import ValidationError
-from djoser.views import UserViewSet
-from rest_framework.decorators import action
-from .serializers import SubscriptionsSerializer
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Subscription, User
 from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+
+from .models import Subscription, User
+from .serializers import SubscriptionsSerializer
 
 
 class CustomUserViewSet(UserViewSet):
@@ -24,7 +25,6 @@ class CustomUserViewSet(UserViewSet):
             subs,
             many=True,
             context={'request': request})
-        # serializer.context = {'request': request}
         return Response(serializer.data)
 
     @action(methods=['post', 'delete'], detail=True)

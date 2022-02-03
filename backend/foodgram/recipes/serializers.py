@@ -1,10 +1,11 @@
-from rest_framework import serializers
-from .models import Favorite, Ingredient, Recipe, IngredientForRecipe
-from tags.serializers import TagSerializer
-from users.users_serializers import ShowUserSerializer
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
 from tags.models import Tag
+from tags.serializers import TagSerializer
+from users.users_serializers import ShowUserSerializer
+
+from .models import Favorite, Ingredient, IngredientForRecipe, Recipe
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -47,11 +48,15 @@ class FullRecipeSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
-        return obj.fan.filter(user=user).exists()
+        if user.is_authenticated:
+            return obj.fan.filter(user=user).exists()
+        return False
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context['request'].user
-        return obj.customers.filter(user=user).exists()
+        if user.is_authenticated:
+            return obj.customers.filter(user=user).exists()
+        return False
 
     def get_ingredients(self, obj):
         ings = obj.ings_for_recipe.all()

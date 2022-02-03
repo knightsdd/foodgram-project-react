@@ -1,9 +1,9 @@
+from recipes.models import Recipe
+from recipes.serializers import SimpleRecipeSerializer
 from rest_framework import serializers
 
 from .models import User
-from recipes.models import Recipe
 from .users_serializers import ShowUserSerializer
-from recipes.serializers import SimpleRecipeSerializer
 
 
 class SubscriptionsSerializer(ShowUserSerializer):
