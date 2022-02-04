@@ -3,8 +3,6 @@ from django.urls import include, path
 from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
                                    SpectacularSwaggerView)
 from recipes.urls import recipes_router
-from recipes.views import FavoriteView, RecipeDetailAPIView, RecipeListAPIView
-from shop.views import ListForShoppingAPIView, ShoppingCartAPIView
 from tags.urls import tag_router
 
 urlpatterns = [
@@ -12,17 +10,8 @@ urlpatterns = [
     path('api/', include(tag_router.urls)),
     path('api/', include(recipes_router.urls)),
     path('api/', include('users.urls')),
-    path('api/recipes/', RecipeListAPIView.as_view()),
-    path('api/recipes/<int:recipe_id>/', RecipeDetailAPIView.as_view()),
-    path(
-        'api/recipes/<int:recipe_id>/shopping_cart/',
-        ShoppingCartAPIView.as_view()),
-    path(
-        'api/recipes/download_shopping_cart/',
-        ListForShoppingAPIView.as_view()),
-    path(
-        'api/recipes/<int:recipe_id>/favorite/',
-        FavoriteView.as_view()),
+    path('api/recipes/', include('recipes.urls')),
+    path('api/recipes/', include('shop.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path(
         'api/schema/redoc/',
