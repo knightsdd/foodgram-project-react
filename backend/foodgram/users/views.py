@@ -29,7 +29,6 @@ class CustomUserViewSet(UserViewSet):
 
     @action(methods=['post', 'delete'], detail=True)
     def subscribe(self, request, id=None):
-        print('AAA ', id)
         author = get_object_or_404(User, pk=id)
         if request.method == 'POST':
             if request.user.following.filter(author=author).exists():
