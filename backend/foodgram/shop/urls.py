@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import ShoppingCartAPIView, ListForShoppingAPIView
+from .views import ListForShoppingAPIView, ShoppingCartAPIView
 
 urlpatterns = [
     path('<int:recipe_id>/shopping_cart/', ShoppingCartAPIView.as_view()),

@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+
 from tags.models import Tag
 
 User = get_user_model()
@@ -19,6 +20,8 @@ class Ingredient(models.Model):
         return f'{self.name}, ({self.measurement_unit})'
 
     class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
         ordering = ['name']
         indexes = [
             models.Index(fields=['name']),
@@ -63,10 +66,12 @@ class Recipe(models.Model):
         through='IngredientForRecipe')
 
     class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
         ordering = ['-pub_date']
 
     def __str__(self) -> str:
-        return self.name[:20]
+        return self.name[:25]
 
 
 class IngredientForRecipe(models.Model):
@@ -86,23 +91,39 @@ class IngredientForRecipe(models.Model):
     amount = models.PositiveIntegerField(
         verbose_name='Количество')
 
+    class Meta:
+        verbose_name = 'Ингредиент для рецепта'
+        verbose_name_plural = 'Ингредиенты для рецептов'
+        ordering = ['-pk']
+
+    def __str__(self):
+        return f'{self.ingredient} - {self.recipe} - {self.amount}'
+
 
 class Favorite(models.Model):
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        verbose_name='Пользователь',
         related_name='fav_recipes')
 
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
+        verbose_name='Рецепт',
         related_name='fan')
 
     class Meta:
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
+        ordering = ['-pk']
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
                 name='unique_user_recipe'
             )
         ]
+
+    def __str__(self):
+        return f'{self.user} likes {self.recipe}'
