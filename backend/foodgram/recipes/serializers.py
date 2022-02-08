@@ -18,9 +18,14 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class SimpleRecipeSerializer(serializers.ModelSerializer):
 
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time',)
+
+    def get_image(self, obj):
+        return obj.image.url
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -40,6 +45,7 @@ class FullRecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -72,6 +78,9 @@ class FullRecipeSerializer(serializers.ModelSerializer):
                 }
             )
         return data
+
+    def get_image(self, obj):
+        return obj.image.url
 
 
 class IngredientForRecipeSerializer(serializers.Serializer):
