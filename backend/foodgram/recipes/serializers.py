@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-
 from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.users_serializers import ShowUserSerializer
@@ -113,6 +112,21 @@ class AddRecipeSerialier(serializers.ModelSerializer):
             'pub_date',
             'author')
         read_only_fields = ('pub_date', 'author')
+
+    def validate_cooking_time(self, value):
+        if value <= 0:
+            raise serializers.ValidationError(
+                'Ошибка! Время приготовления не может быть '
+                'нулевым или отрицательным числом')
+        return value
+
+    def validate_ingredients(self, value):
+        for i in value:
+            if i['amount'] <= 0:
+                raise serializers.ValidationError(
+                    'Ошибка! Количество ингредиента не может быть '
+                    'нулевым или отрицательным числом')
+        return value
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
