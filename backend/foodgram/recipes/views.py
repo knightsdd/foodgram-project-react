@@ -1,3 +1,6 @@
+import base64
+import os
+
 from core.pagination import UserPagination
 from django.shortcuts import get_object_or_404
 from django_filters import CharFilter, FilterSet
@@ -6,6 +9,8 @@ from rest_framework import permissions, status, views, viewsets
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from users.models import User
+
+from foodgram.settings import MEDIA_ROOT
 
 from .models import Ingredient, Recipe
 from .serializers import (AddRecipeSerialier, FavoriteSerializer,
@@ -120,6 +125,16 @@ class RecipeDetailAPIView(views.APIView):
                 detail={'detail': 'У вас недостаточно прав для выполнения'
                                   'данного действия.'},
                 code=status.HTTP_403_FORBIDDEN)
+
+        file_path = os.path.join(MEDIA_ROOT, str(recipe.image))
+        with open(file_path, "rb") as image_file:
+            encoded_image = base64.b64encode(image_file.read())
+        _, ext = str(recipe.image).split('.')
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+        request.data['image'] = (f'data:/image/{ext};base64,'
+                                 f'{encoded_image.decode("utf-8")}')
+
         serializer = AddRecipeSerialier(
             recipe,
             data=request.data,

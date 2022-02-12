@@ -116,16 +116,16 @@ class AddRecipeSerialier(serializers.ModelSerializer):
     def validate_cooking_time(self, value):
         if value <= 0:
             raise serializers.ValidationError(
-                'Ошибка! Время приготовления не может быть '
-                'нулевым или отрицательным числом')
+                {'error': 'Время приготовления не может быть '
+                 'нулевым или отрицательным числом'})
         return value
 
     def validate_ingredients(self, value):
         for i in value:
             if i['amount'] <= 0:
                 raise serializers.ValidationError(
-                    'Ошибка! Количество ингредиента не может быть '
-                    'нулевым или отрицательным числом')
+                    {'error': 'Количество не может быть '
+                     'нулевым или отрицательным числом'})
         return value
 
     def create(self, validated_data):
