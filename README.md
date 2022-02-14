@@ -13,6 +13,9 @@ Foodgram - сервис для просмотра и публикации рец
 - Подписываться на других пользователей
 - Фильтровать рецепты по тегам
 
+### Технологии:
+Бекэнд Foodgram это Django проект с реализованным API для фронтенда. API построен на Django Rest Framework (DRF). Используется базада данных PostgreSQL.
+
 
 ### Как запустить backend проекта локально:
 
@@ -38,33 +41,45 @@ DB_PORT=5432
 Убедитесь, что у вас установлен docker и docker-compose. После чего выполните команду:
 
 ```
-docker-compose up
+docker-compose up --build
 ```
 
-После успешного запуска контейнеров, выполните миграции с помощью следующих команд:
+После успешного запуска контейнеров, выполните миграции и соберите статику с помощью следующих команд:
 
 ```
-docker exec -it infra_backend_1 bash
+docker-compose exec backend python3 manage.py migrate
 ```
 
 ```
-python3 manage.py migrate
-```
-
-Соберите статические файлы
-
-```
-python3 manage.py collectstatic --no-input
+docker-compose exec backend python3 manage.py collectstatic --no-input
 ```
 
 При необходимости создайте суперпользователя командой:
 
 ```
-python3 manage.py createsuperuser
+docker-compose exec backend python3 manage.py createsuperuser
 ```
 
-После этого админ панель будет доступна по адресу: http://127.0.0.1:8000/admin/
+Можно воспользоваться готовыми тестовыми данными, для заполнения базы данных:
 
-Доступные endpoints можно увидеть по адресу: http://127.0.0.1:8000/api/schema/swagger-ui/
+```
+docker-compose exec backend python3 manage.py load_tags --path './core/data/tags.csv'
+docker-compose exec backend python3 manage.py load_users --path './core/data/users.csv'
+docker-compose exec backend python3 manage.py load_ingredients --path './core/data/ingredients.csv'
+```
 
-PS: Readmi находится в активной разработке
+Пользователи имеют следующие учетные данные:
+
+user01@foodgram.ru us123456
+user02@foodgram.ru us123456
+user03@foodgram.ru us123456
+user04@foodgram.ru us123456
+user05@foodgram.ru us123456
+user06@foodgram.ru us123456
+
+Учетные данные суперпользователя для демо режима:
+admin@foodgram.ru aid123456
+
+Админ панель доступна по адресу: http://localhost/admin/
+
+Доступные endpoints можно увидеть по адресу: http://localhost/api/schema/swagger-ui/
