@@ -1,7 +1,6 @@
-from rest_framework import serializers
-
 from recipes.models import Recipe
 from recipes.serializers import SimpleRecipeSerializer
+from rest_framework import serializers
 
 from .models import User
 from .users_serializers import ShowUserSerializer
