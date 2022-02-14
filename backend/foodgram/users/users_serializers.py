@@ -37,7 +37,7 @@ class CreateUserSerializer(UserCreateSerializer):
             'first_name': {'required': True},
             'last_name': {'required': True},
             'password': {'required': True, 'write_only': True},
-            }
+        }
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():

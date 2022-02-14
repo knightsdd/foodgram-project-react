@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+
 from tags.models import Tag
 
 User = get_user_model()
@@ -48,8 +49,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
-        verbose_name='Тег'
-        )
+        verbose_name='Тег')
 
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления в минутах')

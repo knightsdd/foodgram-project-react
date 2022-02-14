@@ -1,16 +1,16 @@
 import base64
 import os
 
-from core.pagination import UserPagination
 from django.shortcuts import get_object_or_404
 from django_filters import CharFilter, FilterSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, views, viewsets
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
-from users.models import User
 
+from core.pagination import UserPagination
 from foodgram.settings import MEDIA_ROOT
+from users.models import User
 
 from .models import Ingredient, Recipe
 from .serializers import (AddRecipeSerialier, FavoriteSerializer,
@@ -46,9 +46,7 @@ class FavoriteView(views.APIView):
         serializer = FavoriteSerializer(
             data={
                 'user': request.user.pk,
-                'recipe': recipe_id
-                }
-            )
+                'recipe': recipe_id})
         if serializer.is_valid():
             serializer.save(user=request.user, recipe=recipe)
             representation = SimpleRecipeSerializer(recipe)
