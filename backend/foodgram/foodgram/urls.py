@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
                                    SpectacularSwaggerView)
-
 from recipes.urls import recipes_router
 from tags.urls import tag_router
 
