@@ -17,7 +17,7 @@ Foodgram - сервис для просмотра и публикации рец
 Бекэнд Foodgram это Django проект с реализованным API для фронтенда. API построен на Django Rest Framework (DRF). Используется базада данных PostgreSQL.
 
 
-### Как запустить backend проекта локально:
+### Как запустить проект локально:
 
 Клонировать репозиторий и перейти директорию infra:
 
@@ -77,9 +77,63 @@ user04@foodgram.ru us123456
 user05@foodgram.ru us123456
 user06@foodgram.ru us123456
 
-Учетные данные суперпользователя для демо режима:
-admin@foodgram.ru aid123456
-
 Админ панель доступна по адресу: http://localhost/admin/
 
 Доступные endpoints можно увидеть по адресу: http://localhost/api/schema/swagger-ui/
+
+### Как запустить проект на сервере:
+
+Копируем файл docker-compose.yaml (из корня репозитория) и nginx.conf (из папки infra) в одну директорию на вашем сервере.
+
+На серевере:
+- устанавливаем PostgreSQL
+```
+sudo apt install postgresql postgresql-contrib -y 
+```
+
+- создаем новую базу данных (далее в .env параметр DB_NAME)
+```
+sudo -u postgres psql
+CREATE DATABASE your_db_name;
+```
+
+- создаем пользователя для базы данных (далее в .env параметры POSTGRES_USER, POSTGRES_PASSWORD)
+```
+CREATE USER your_db_user WITH ENCRYPTED PASSWORD 'xxxyyyzzz';
+GRANT ALL PRIVILEGES ON DATABASE your_db_name TO your_db_user; 
+```
+
+Создаем файл .env для хранения переменных окружения:
+
+```
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres # Your data_base
+POSTGRES_USER=postgres # Your user
+POSTGRES_PASSWORD=postgres # Your password
+DB_HOST=db
+DB_PORT=5432
+DB_NGINX_HOST_IP=123.123.123.123 # ip adress your server
+DB_NGINX_HOST_NAME=mybesthost.com # Domain name your server
+```
+
+Выполняем команду
+```
+docker-compose up
+```
+
+При необходимости создайте суперпользователя командой:
+
+```
+docker-compose exec backend python3 manage.py createsuperuser
+```
+
+Можно воспользоваться готовыми тестовыми данными, для заполнения базы данных:
+
+```
+docker-compose exec backend python3 manage.py load_tags --path './core/data/tags.csv'
+docker-compose exec backend python3 manage.py load_users --path './core/data/users.csv'
+docker-compose exec backend python3 manage.py load_ingredients --path './core/data/ingredients.csv'
+```
+
+Учетные данные суперпользователя для демо режима:
+admin@foodgram.ru aid123456
