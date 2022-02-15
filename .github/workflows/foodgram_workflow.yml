@@ -78,8 +78,8 @@ jobs:
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-            echo DB_NGINX_HOST_IP=${{ secrets.NGINX_HOST_IP }} >> .env
-            echo DB_NGINX_HOST_NAME=${{ secrets.NGINX_HOST_NAME }} >> .env
+            echo NGINX_HOST_IP=${{ secrets.NGINX_HOST_IP }} >> .env
+            echo NGINX_HOST_NAME=${{ secrets.NGINX_HOST_NAME }} >> .env
             sudo docker-compose up -d
             sudo docker-compose exec -T backend python manage.py migrate
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
