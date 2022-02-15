@@ -1,4 +1,4 @@
-# for build and local launch
+# for remoute server launch
 version: '3.3'
 services:
 
@@ -10,9 +10,7 @@ services:
       - ./.env
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: knightsd/foodgram:latest
     restart: always
     ports: 
       - 8000:8000
