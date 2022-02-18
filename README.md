@@ -137,3 +137,4 @@ docker-compose exec backend python3 manage.py load_ingredients --path './core/da
 
 Учетные данные суперпользователя для демо режима:
 admin@foodgram.ru aid123456
+
