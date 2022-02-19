@@ -83,6 +83,6 @@ jobs:
             sudo docker-compose up -d
             sudo docker-compose exec -T backend python manage.py migrate
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
-            sudo docker-compose exec backend python3 manage.py load_tags --path './core/data/tags.csv'
-            sudo docker-compose exec backend python3 manage.py load_users --path './core/data/users.csv'
-            sudo docker-compose exec backend python3 manage.py load_ingredients --path './core/data/ingredients.csv'
+            sudo docker-compose exec -T backend python3 manage.py load_tags --path './core/data/tags.csv'
+            sudo docker-compose exec -T backend python3 manage.py load_users --path './core/data/users.csv'
+            sudo docker-compose exec -T backend python3 manage.py load_ingredients --path './core/data/ingredients.csv'
