@@ -6,13 +6,13 @@ services:
     image: postgres:13.0-alpine
     restart: always
     volumes:
-      - psql_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/ 
     env_file:
       - ./.env
     environment:
-      - DB_NAME=foodgram
-      - POSTGRES_USER=foodgram_user1
-      - POSTGRES_PASSWORD=pas654321
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   backend:
     image: knightsd/foodgram_backend:latest
@@ -51,6 +51,6 @@ services:
       - ./.env
 
 volumes:
-  psql_data:
+  postgres_data:
   static_value:
   media_value:
