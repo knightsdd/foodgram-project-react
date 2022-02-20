@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from users.models import User
 
 from .models import Ingredient, Recipe
-from .serializers import (AddRecipeSerialier, FavoriteSerializer,
+from .serializers import (AddRecipeSerializer, FavoriteSerializer,
                           FullRecipeSerializer, IngredientSerializer,
                           SimpleRecipeSerializer)
 
@@ -94,7 +94,7 @@ class RecipeListAPIView(views.APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = AddRecipeSerialier(
+        serializer = AddRecipeSerializer(
             data=request.data,
             context={'request': request})
         if serializer.is_valid():
@@ -122,23 +122,23 @@ class RecipeDetailAPIView(views.APIView):
                 detail={'detail': 'У вас недостаточно прав для выполнения'
                                   'данного действия.'},
                 code=status.HTTP_403_FORBIDDEN)
-
+        
+        file_path = os.path.join(MEDIA_ROOT, str(recipe.image))
         if not request.data.get('image'):
-            file_path = os.path.join(MEDIA_ROOT, str(recipe.image))
             with open(file_path, "rb") as image_file:
                 encoded_image = base64.b64encode(image_file.read())
             ext = str(recipe.image).split('.')[-1:][0]
-            if os.path.isfile(file_path):
-                os.remove(file_path)
             request.data['image'] = (f'data:/image/{ext};base64,'
                                      f'{encoded_image.decode("utf-8")}')
 
-        serializer = AddRecipeSerialier(
+        serializer = AddRecipeSerializer(
             recipe,
             data=request.data,
             context={'request': request})
         if serializer.is_valid():
             serializer.save(author=request.user)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

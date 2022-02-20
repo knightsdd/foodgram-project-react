@@ -87,7 +87,7 @@ class IngredientForRecipeSerializer(serializers.Serializer):
     amount = serializers.IntegerField()
 
 
-class AddRecipeSerialier(serializers.ModelSerializer):
+class AddRecipeSerializer(serializers.ModelSerializer):
 
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
