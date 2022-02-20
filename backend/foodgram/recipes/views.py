@@ -122,7 +122,7 @@ class RecipeDetailAPIView(views.APIView):
                 detail={'detail': 'У вас недостаточно прав для выполнения'
                                   'данного действия.'},
                 code=status.HTTP_403_FORBIDDEN)
-        
+
         file_path = os.path.join(MEDIA_ROOT, str(recipe.image))
         if not request.data.get('image'):
             with open(file_path, "rb") as image_file:
