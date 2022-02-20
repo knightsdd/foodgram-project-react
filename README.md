@@ -117,6 +117,10 @@ docker-compose exec backend python3 manage.py load_users --path './core/data/use
 docker-compose exec backend python3 manage.py load_ingredients --path './core/data/ingredients.csv'
 ```
 
+
+На данный момент проект запущен по адресу:
+http://knightsd.cohort3plus.ru/
+
 Учетные данные суперпользователя для демо режима:
 admin@foodgram.ru aid123456
 

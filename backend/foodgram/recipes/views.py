@@ -123,14 +123,15 @@ class RecipeDetailAPIView(views.APIView):
                                   'данного действия.'},
                 code=status.HTTP_403_FORBIDDEN)
 
-        file_path = os.path.join(MEDIA_ROOT, str(recipe.image))
-        with open(file_path, "rb") as image_file:
-            encoded_image = base64.b64encode(image_file.read())
-        _, ext = str(recipe.image).split('.')
-        if os.path.isfile(file_path):
-            os.remove(file_path)
-        request.data['image'] = (f'data:/image/{ext};base64,'
-                                 f'{encoded_image.decode("utf-8")}')
+        if not request.data.get('image'):
+            file_path = os.path.join(MEDIA_ROOT, str(recipe.image))
+            with open(file_path, "rb") as image_file:
+                encoded_image = base64.b64encode(image_file.read())
+            ext = str(recipe.image).split('.')[-1:][0]
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+            request.data['image'] = (f'data:/image/{ext};base64,'
+                                     f'{encoded_image.decode("utf-8")}')
 
         serializer = AddRecipeSerialier(
             recipe,
