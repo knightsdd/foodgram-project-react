@@ -124,8 +124,11 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         for i in value:
             if i['amount'] <= 0:
                 raise serializers.ValidationError(
-                    {'error': 'Количество не может быть '
-                     'нулевым или отрицательным числом'})
+                    [
+                        {'ingredients': ['Количество не может быть '
+                                         'нулевым или отрицательным числом']},
+                    ]
+                )
         return value
 
     def create(self, validated_data):
