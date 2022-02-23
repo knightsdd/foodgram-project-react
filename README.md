@@ -83,33 +83,48 @@ user06@foodgram.ru us123456
 
 ### Как запустить проект на сервере:
 
-Копируем файл docker-compose.yaml (из корня репозитория) и nginx.conf (из папки infra) в одну директорию на вашем сервере.
+Запуск проекта на сервере осуществляется через Github Actions. Файл foodgram_workflows.yml лежит в репозитории по адресу .github/workflows.
 
-Создаем файл .env для хранения переменных окружения:
+В нем содержаться автоматизированые инструкции для:
+- тестирования кода на соответствие PEP8
+- загрузки образов фронтэнда и бекэнда на dockerhub
+- деплой проекта на сервер
+
+Для успешного запуска на боевом сервере потребуется:
+
+1. Создать следующие переменные окружения в Github Actions Secrets:
 
 ```
 DB_ENGINE=django.db.backends.postgresql
-DB_NAME=postgres # Your data_base name
-POSTGRES_USER=postgres # Your user
-POSTGRES_PASSWORD=postgres # Your password
+DB_NAME=postgres # Название вашей базы данных
+POSTGRES_USER=postgres # Имя пользователя с правами доступа для базы данных
+POSTGRES_PASSWORD=postgres # Пароль для пользователя
 DB_HOST=db
 DB_PORT=5432
-DB_NGINX_HOST_IP=123.123.123.123 # ip adress your server
-DB_NGINX_HOST_NAME=mybesthost.com # Domain name your server
+NGINX_HOST_IP=123.123.123.123 # ip адрес серевера на который деплоим проект
+NGINX_HOST_NAME=mybesthost.com # Доменное имя сервера на который деплоим проект
+USER=server_username # Имя пользователя на сервере
+SSH_KEY=**** # ssh ключ для удаленного доступа к серверу
+PASSPHRASE=******* # Пароль от ssh ключа
+DOCKER_USERNAME=docker_user # Логин на dockerhub
+DOCKER_PASSWORD=**** # Пароль на dockerhub
 ```
 
-Выполняем команду
+2. Скопировать файл docker-compose.yaml (из корня репозитория) и nginx.conf (из папки infra) в одну директорию на вашем сервере.
+
+3. Сделать комит и пуш в ветку мастер.
+
 ```
-docker-compose up -d
+git push
 ```
 
-При необходимости создайте суперпользователя командой:
+4. При необходимости создайте суперпользователя командой:
 
 ```
 docker-compose exec backend python3 manage.py createsuperuser
 ```
 
-Можно воспользоваться готовыми тестовыми данными, для заполнения базы данных:
+5. Можно воспользоваться командами, для заполнения базы тестовыми данными:
 
 ```
 docker-compose exec backend python3 manage.py load_tags --path './core/data/tags.csv'
@@ -117,6 +132,7 @@ docker-compose exec backend python3 manage.py load_users --path './core/data/use
 docker-compose exec backend python3 manage.py load_ingredients --path './core/data/ingredients.csv'
 ```
 
+Дополнительная информация:
 
 На данный момент проект запущен по адресу:
 http://knightsd.cohort3plus.ru/
